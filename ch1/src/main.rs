@@ -4,7 +4,8 @@
 
 #![no_std]
 #![no_main]
-#![feature(naked_functions, asm_const)]
+//#![feature(naked_functions, asm_const)]
+#![feature(naked_functions)]
 #![deny(warnings, missing_docs, rustdoc::broken_intra_doc_links)]
 
 mod book;
@@ -33,7 +34,7 @@ unsafe extern "C" fn _start() -> ! {
     #[link_section = ".bss.uninit"]
     static mut STACK: [u8; STACK_SIZE] = [0u8; STACK_SIZE];
 
-    core::arch::asm!(
+    core::arch::naked_asm!(
         // 这段汇编展示了打印的原始形态：从字符串存储的位置取出字节，传输给串口外设。
         "   li   a0, {uart}
             la   a1, {hello}
@@ -55,7 +56,7 @@ unsafe extern "C" fn _start() -> ! {
         stack      =   sym STACK,
         main       =   sym rust_main,
         // 根据规范，裸函数必须且只能带有 `noreturn` 选项。
-        options(noreturn),
+        //options(noreturn),
     )
 }
 
