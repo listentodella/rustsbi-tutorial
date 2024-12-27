@@ -1,6 +1,6 @@
 #![no_std]
 #![no_main]
-#![feature(naked_functions, asm_const)]
+#![feature(naked_functions)]
 #![deny(warnings)]
 
 #[macro_use]
@@ -17,6 +17,7 @@ extern "C" fn rust_main(_hartid: usize, dtb_ptr: usize) -> ! {
     // 从设备树中解析出串口、测试设备的地址以及机器型号
     let machine = MachineInfo::from_dtb(dtb_ptr);
     unsafe {
+        //const UART_BASE_ADDR: usize = 0x10000000;
         UART = machine.uart;
         TEST = machine.test;
     }

@@ -2,7 +2,8 @@
 !**/.cargo/*
 !/.github/*
 !/.vscode/settings.json
-
+.DS_Store
+.gdb_history
 /target
 *.asm
 *.bin

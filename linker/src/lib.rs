@@ -51,19 +51,14 @@ macro_rules! boot0 {
             #[link_section = ".boot.stack"]
             static mut STACK: [u8; $stack] = [0u8; $stack];
 
-            core::arch::asm!(
+            core::arch::naked_asm!(
                 "la sp, __end",
                 "j  {main}",
                 main = sym $entry,
-                options(noreturn),
+                //options(noreturn),
             )
         }
     };
-}
-
-extern "C" {
-    static mut __sbss: u8;
-    static mut __ebss: u8;
 }
 
 /// 清零 .bss。
@@ -72,12 +67,14 @@ extern "C" {
 ///
 /// 必须在使用 .bss 内任何东西之前调用。
 pub unsafe fn zero_bss() {
-    let mut ptr = &mut __sbss as *mut u8;
-    let end = &mut __ebss as *mut u8;
-
-    while ptr < end {
-        // 必须 volatile，不能用 `slice::fill`，因为需要多核可见。
-        ptr.write_volatile(0);
-        ptr = ptr.add(1);
+    extern "C" {
+        fn __sbss();
+        fn __ebss();
+    }
+    unsafe {
+        // 必须 volatile，不能用 `slice::fill`，因为需要多核可见
+        (__sbss as usize..__ebss as usize).for_each(|addr| {
+            (addr as *mut u8).write_volatile(0);
+        });
     }
 }

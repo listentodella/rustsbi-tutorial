@@ -153,18 +153,18 @@ impl QemuArgs {
             Qemu::search_at(p);
         }
         Qemu::system("riscv64")
-            .args(&["-machine", "virt"])
+            .args(["-machine", "virt"])
             .arg("-nographic")
             .arg("-bios")
             .arg(objcopy(elf, true))
             // TODO
             // .arg("-kernel")
             // .arg(PROJECT.join("test-kernel.bin"))
-            .args(&["-smp", &self.smp.unwrap_or(1).to_string()])
-            .args(&["-m", "64M"])
-            .args(&["-serial", "mon:stdio"])
+            .args(["-smp", &self.smp.unwrap_or(1).to_string()])
+            .args(["-m", "64M"])
+            .args(["-serial", "mon:stdio"])
             .optional(&self.gdb, |qemu, gdb| {
-                qemu.args(&["-S", "-gdb", &format!("tcp::{gdb}")]);
+                qemu.args(["-S", "-gdb", &format!("tcp::{gdb}")]);
             })
             .invoke();
     }
